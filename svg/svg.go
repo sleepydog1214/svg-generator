@@ -2,10 +2,37 @@ package svg
 
 import (
   "os"
+  "time"
+  "strconv"
+  "math/rand"
   "github.com/sleepydog1214/svg-generator/check"
   "github.com/sleepydog1214/svg-generator/defs"
 )
 
+var rseed = time.Now().Unix() + 123456
+
+// RandomInt returns a random positive int between  lb <= n <= ub
+func RandomInt (lb int, ub int) (r int) {
+  // Make sure we get a new seed on each call
+  rseed += time.Now().UnixNano()
+  rseed++
+  rand.Seed(rseed)
+
+  r = (rand.Int() % ((ub + 1) - lb)) + lb
+  return r
+}
+
+// randomRGB creates a random rgb(r,g,b) color
+func randomRGB() (rgb string) {
+  r := strconv.FormatInt(int64(RandomInt(0, 255)), 10)
+  g := strconv.FormatInt(int64(RandomInt(0, 255)), 10)
+  b := strconv.FormatInt(int64(RandomInt(0, 255)), 10)
+
+  rgb = `rgb(` + r + `,` + g + `,` + b + `)`
+  return
+}
+
+// PrintHeader writes the opening svg tag
 func PrintHeader (fp *os.File, fname string) () {
   header := `<?xml version="1.0" encoding="UTF-8" standalone="no"?>` + "\n" +
              `<svg ` + "\n" +
@@ -20,9 +47,48 @@ func PrintHeader (fp *os.File, fname string) () {
   check.Error(err)
 }
 
+// PrintFooter writes the svg closing tag
 func PrintFooter (fp *os.File) () {
   footer := `<\svg>`
 
   _, err := fp.WriteString(footer)
+  check.Error(err)
+}
+
+// Draw the base rectangle beneath all other shapes
+func BaseRect (fp *os.File,) () {
+    fill := randomRGB()
+    stroke := randomRGB()
+
+    rect := `<g><rect ` + "\n" +
+             ` id="baseRect" ` + "\n" +
+             ` x="0" y="0" ` +
+             ` width="` + defs.Params["maxWidth"] + `" ` +
+             ` height="` + defs.Params["maxHeight"] + `"` + "\n" +
+             ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:4;"></g>` + "\n"
+
+  _, err := fp.WriteString(rect)
+  check.Error(err)
+}
+
+// Rectangle draw a random rectangle
+func Rectangle(fp *os.File, idx int) () {
+  xVal := RandomInt(0, defs.ShapeParams["XCorner"])
+  yVal := RandomInt(0, defs.ShapeParams["YCorner"])
+  wVal := RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Width"])
+  hVal := RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Height"])
+  sWidth := RandomInt(defs.ShapeParams["StrokeLB"], defs.ShapeParams["StrokeUB"])
+  fill := randomRGB()
+  stroke := randomRGB()
+
+  rect := `<rect ` + "\n" +
+          ` id="rect` + strconv.Itoa(idx) + `"` +
+          ` x="` + strconv.Itoa(xVal) + `"` +
+          ` y="` + strconv.Itoa(yVal) + `"` +
+          ` width="` + strconv.Itoa(wVal) + `"` +
+          ` height="` + strconv.Itoa(hVal) + `"` + "\n" +
+          ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;">` + "\n"
+
+  _, err := fp.WriteString(rect)
   check.Error(err)
 }
