@@ -32,6 +32,20 @@ func randomRGB() (rgb string) {
   return
 }
 
+var xVal, yVal, wVal, hVal, sWidth int
+var fill, stroke string
+
+// shapeVals sets the random values for rectangles and ellipses
+func shapeVals() () {
+  xVal = RandomInt(0, defs.ShapeParams["XCorner"])
+  yVal = RandomInt(0, defs.ShapeParams["YCorner"])
+  wVal = RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Width"])
+  hVal = RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Height"])
+  sWidth = RandomInt(defs.ShapeParams["StrokeLB"], defs.ShapeParams["StrokeUB"])
+  fill = randomRGB()
+  stroke = randomRGB()
+}
+
 // PrintHeader writes the opening svg tag
 func PrintHeader (fp *os.File, fname string) () {
   header := `<?xml version="1.0" encoding="UTF-8" standalone="no"?>` + "\n" +
@@ -49,7 +63,7 @@ func PrintHeader (fp *os.File, fname string) () {
 
 // PrintFooter writes the svg closing tag
 func PrintFooter (fp *os.File) () {
-  footer := `<\svg>`
+  footer := `</svg>`
 
   _, err := fp.WriteString(footer)
   check.Error(err)
@@ -65,7 +79,7 @@ func BaseRect (fp *os.File,) () {
              ` x="0" y="0" ` +
              ` width="` + defs.Params["maxWidth"] + `" ` +
              ` height="` + defs.Params["maxHeight"] + `"` + "\n" +
-             ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:4;"></g>` + "\n"
+             ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:4;" /></g>` + "\n"
 
   _, err := fp.WriteString(rect)
   check.Error(err)
@@ -73,22 +87,145 @@ func BaseRect (fp *os.File,) () {
 
 // Rectangle draw a random rectangle
 func Rectangle(fp *os.File, idx int) () {
-  xVal := RandomInt(0, defs.ShapeParams["XCorner"])
-  yVal := RandomInt(0, defs.ShapeParams["YCorner"])
-  wVal := RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Width"])
-  hVal := RandomInt(defs.ShapeParams["LB"], defs.ShapeParams["Height"])
-  sWidth := RandomInt(defs.ShapeParams["StrokeLB"], defs.ShapeParams["StrokeUB"])
-  fill := randomRGB()
-  stroke := randomRGB()
+  shapeVals()
 
   rect := `<rect ` + "\n" +
-          ` id="rect` + strconv.Itoa(idx) + `"` +
+          ` id="rect` + strconv.Itoa(idx) + `"` + "\n" +
           ` x="` + strconv.Itoa(xVal) + `"` +
           ` y="` + strconv.Itoa(yVal) + `"` +
           ` width="` + strconv.Itoa(wVal) + `"` +
           ` height="` + strconv.Itoa(hVal) + `"` + "\n" +
-          ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;">` + "\n"
+          ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;" />` + "\n"
 
   _, err := fp.WriteString(rect)
+  check.Error(err)
+}
+
+// Ellipse draw a random ellipse
+func Ellipse(fp *os.File, idx int) () {
+    shapeVals()
+
+    ellipse := `<ellipse ` + "\n" +
+               ` id="ellipse` + strconv.Itoa(idx) + `"` + "\n" +
+               ` cx="` + strconv.Itoa(xVal) + `"` +
+               ` cy="` + strconv.Itoa(yVal) + `"` +
+               ` rx="` + strconv.Itoa(wVal) + `"` +
+               ` ry="` + strconv.Itoa(hVal) + `"` + "\n" +
+               ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;" />` + "\n"
+
+  _, err := fp.WriteString(ellipse)
+  check.Error(err)
+}
+
+// Polygon draw a random Polygon
+func Polygon(fp *os.File, idx int) () {
+  points := RandomInt(defs.ShapeParams["PointsLB"], defs.ShapeParams["PointsUB"])
+  shapeVals()
+
+  xy := make([]string, points)
+  xy[0] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
+
+  for i := 1; i < points; i++ {
+    switch i {
+      case 1:
+        xVal += 20
+        yVal -= 20
+      case 2:
+        xVal += 20
+        yVal += 30
+      case 3:
+        xVal -= 30
+        yVal += 20
+      case 4:
+        xVal -= 10
+        yVal += 25
+      case 5:
+        xVal -= 10
+      case 6:
+        xVal -= 15
+        yVal -= 15
+      case 7:
+        xVal -= 5
+        yVal -= 25
+    }
+    xy[i] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
+  }
+
+  polygon := `<polygon ` + "\n" +
+             ` id="polygon` + strconv.Itoa(idx) + `"` + "\n" +
+             `points="`
+  for i := 0; i < points; i++ {
+    polygon += ` ` + xy[i]
+  }
+  polygon += `"` + "\n"
+  polygon += ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;" />` + "\n"
+
+  _, err := fp.WriteString(polygon)
+  check.Error(err)
+}
+
+// Polyline draw a random Polyline
+func Polyline(fp *os.File, idx int) () {
+  points := RandomInt(defs.ShapeParams["PointsLB"], defs.ShapeParams["PointsUB"])
+  shapeVals()
+
+  xy := make([]string, points)
+  xy[0] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
+
+  for i := 1; i < points; i++ {
+    switch i {
+      case 1:
+        xVal += 10
+        yVal -= 25
+      case 2:
+        xVal += 25
+        yVal += 10
+      case 3:
+        xVal += 15
+        yVal += 5
+      case 4:
+        xVal += 5
+        yVal += 15
+      case 5:
+        xVal += 10
+        yVal -= 15
+      case 6:
+        xVal += 15
+        yVal -= 10
+      case 7:
+        xVal += 20
+        yVal += 25
+    }
+    xy[i] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
+  }
+
+  polyline := `<polyline ` + "\n" +
+             ` id="polyline` + strconv.Itoa(idx) + `"` + "\n" +
+             `points="`
+  for i := 0; i < points; i++ {
+    polyline += ` ` + xy[i]
+  }
+  polyline += `"` + "\n"
+  polyline += ` style="fill:` + fill + `;stroke:` + stroke + `;stroke-width:` + strconv.Itoa(sWidth) + `;" />` + "\n"
+
+  _, err := fp.WriteString(polyline)
+  check.Error(err)
+}
+
+// StartGroup creates a new group of shapes with a set opacity
+func StartGroup(fp *os.File, idx int, opacity string) () {
+    group := `<g ` + "\n" +
+             ` id="group` + strconv.Itoa(idx) + `"` + "\n" +
+             `style="opacity:` + opacity + `">` + "\n"
+
+  _, err := fp.WriteString(group)
+  check.Error(err)
+}
+
+// EndGroup closes the group
+func EndGroup(fp *os.File) () {
+  group := `</g>` + "\n"
+
+  _, err := fp.WriteString(group)
   check.Error(err)
 }

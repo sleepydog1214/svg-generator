@@ -15,4 +15,10 @@ var ShapeParams = map[string] int {
   "Height": 120,
   "StrokeLB": 2,
   "StrokeUB": 20,
+  "PointsLB": 3,
+  "PointsUB": 8,
+  "ShapeLB": 3,
+  "ShapeUB": 10,
+  "GroupLB": 3,
+  "GroupUB": 5,
 }
