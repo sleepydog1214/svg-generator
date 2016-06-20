@@ -44,6 +44,19 @@ func shapeVals() () {
   sWidth = RandomInt(defs.ShapeParams["StrokeLB"], defs.ShapeParams["StrokeUB"])
   fill = randomRGB()
   stroke = randomRGB()
+
+  if wVal > xVal {
+    xVal = wVal
+  }
+  if hVal > yVal {
+    yVal = hVal
+  }
+  if (wVal + xVal) > defs.ShapeParams["XCorner"] {
+    xVal = xVal - ((wVal + xVal) - defs.ShapeParams["XCorner"])
+  }
+  if (hVal + yVal) > defs.ShapeParams["YCorner"] {
+    yVal = yVal - ((hVal + yVal) - defs.ShapeParams["YCorner"])
+  }
 }
 
 // PrintHeader writes the opening svg tag
@@ -125,28 +138,31 @@ func Polygon(fp *os.File, idx int) () {
   xy := make([]string, points)
   xy[0] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
 
+  pointX := wVal / 7;
+  pointY := hVal / 7;
+
   for i := 1; i < points; i++ {
     switch i {
       case 1:
-        xVal += 20
-        yVal -= 20
+        xVal += pointX
+        yVal -= pointY
       case 2:
-        xVal += 20
-        yVal += 30
+        xVal += pointX
+        yVal += pointY
       case 3:
-        xVal -= 30
-        yVal += 20
+        xVal -= pointX
+        yVal += pointY
       case 4:
-        xVal -= 10
-        yVal += 25
+        xVal -= pointX
+        yVal += pointY
       case 5:
-        xVal -= 10
+        xVal -= pointX
       case 6:
-        xVal -= 15
-        yVal -= 15
+        xVal -= pointX
+        yVal -= pointY
       case 7:
-        xVal -= 5
-        yVal -= 25
+        xVal -= pointX
+        yVal -= pointY
     }
     xy[i] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
   }
@@ -172,29 +188,32 @@ func Polyline(fp *os.File, idx int) () {
   xy := make([]string, points)
   xy[0] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
 
+  pointX := wVal / 7;
+  pointY := hVal / 7;
+
   for i := 1; i < points; i++ {
     switch i {
       case 1:
-        xVal += 10
-        yVal -= 25
+        xVal += pointX
+        yVal -= pointY
       case 2:
-        xVal += 25
-        yVal += 10
+        xVal += pointX
+        yVal += pointY
       case 3:
-        xVal += 15
-        yVal += 5
+        xVal += pointX
+        yVal += pointY
       case 4:
-        xVal += 5
-        yVal += 15
+        xVal += pointX
+        yVal += pointY
       case 5:
-        xVal += 10
-        yVal -= 15
+        xVal += pointX
+        yVal -= pointY
       case 6:
-        xVal += 15
-        yVal -= 10
+        xVal += pointX
+        yVal -= pointY
       case 7:
-        xVal += 20
-        yVal += 25
+        xVal += pointX
+        yVal += pointY
     }
     xy[i] = strconv.Itoa(xVal) + `,` + strconv.Itoa(yVal)
   }

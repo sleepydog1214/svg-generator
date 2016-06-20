@@ -66,11 +66,12 @@ func main() {
 
   // Get the number of groups
   groups := svg.RandomInt(defs.ShapeParams["GroupLB"], defs.ShapeParams["GroupUB"])
-  fmt.Println("Creating " + strconv.Itoa(groups) + " groups")
 
   // Draw the base rectangle
   svg.BaseRect(fp)
+  fmt.Println("Creating base rectangle")
 
+  fmt.Println("Creating " + strconv.Itoa(groups) + " groups")
   for i:= 0; i < groups; i++ {
     switch i {
     case 0:

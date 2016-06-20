@@ -3,16 +3,16 @@ package defs
 var Params = map[string] string {
   "maxWidth": "20in",
   "maxHeight": "24in",
-  "maxX": "1000",
-  "maxY": "1200",
+  "maxX": "1800",
+  "maxY": "2160",
 }
 
 var ShapeParams = map[string] int {
-  "XCorner": 750,
-  "YCorner": 900,
+  "XCorner": 1800,
+  "YCorner": 2160,
   "LB": 10,
-  "Width": 100,
-  "Height": 120,
+  "Width": 500,
+  "Height": 500,
   "StrokeLB": 2,
   "StrokeUB": 20,
   "PointsLB": 3,
